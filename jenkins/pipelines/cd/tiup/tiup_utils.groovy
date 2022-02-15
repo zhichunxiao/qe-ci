@@ -25,4 +25,33 @@ def install_tiup_without_key(bin_dir) {
     """
 }
 
+def download(name, tag, hash, os, arch) {
+    if (os == "linux") {
+        platform = "centos7"
+    } else if (os == "darwin" && arch == "amd64") {
+        platform = "darwin"
+    } else if (os == "darwin" && arch == "arm64") {
+        platform = "darwin-arm64"
+    }  else {
+        sh """
+        exit 1
+        """
+    }
+
+    tarball_name = "${name}-${os}-${arch}.tar.gz"
+
+    sh """
+    wget ${FILE_SERVER_URL}/download/builds/pingcap/${name}/optimization/${tag}/${hash}/${platform}/${tarball_name}
+    """
+
+}
+
+def unpack(name, hash, os, arch) {
+    tarball_name = "${name}-${os}-${arch}.tar.gz"
+
+    sh """
+    tar -zxf ${tarball_name}
+    """
+}
+
 return this
