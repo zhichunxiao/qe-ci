@@ -9,6 +9,23 @@ if (params.containsKey("release_test")) {
     ghprbPullDescription = params.getOrDefault("release_test__ghpr_pull_description", "")
 }
 
+echo "trigger by upstream job: ${params.containsKey("upstreamJob")}"
+if (params.containsKey("upstreamJob")) {
+    upstreamJob = params.get("upstreamJob")
+    println "upstreamJob: ${upstreamJob}"
+    ghprbTargetBranch=params.getOrDefault("ghprbTargetBranch", "")
+    ghprbCommentBody=params.getOrDefault("ghprbCommentBody", "")
+    ghprbActualCommit=params.getOrDefault("ghprbActualCommit", "")
+    ghprbPullId=params.getOrDefault("ghprbPullId", "")
+    ghprbPullTitle=params.getOrDefault("ghprbPullTitle", "")
+    ghprbPullLink=params.getOrDefault("ghprbPullLink", "")
+    ghprbPullDescription=params.getOrDefault("ghprbPullDescription", "")
+    println "ghprbTargetBranch: ${ghprbTargetBranch}"
+    println "ghprbCommentBody: ${ghprbCommentBody}"
+    println "ghprbActualCommit: ${ghprbActualCommit}"
+}
+
+
 CI_RUN_PART_TEST_CASES = """
     with_non_recursive window_min_max temp_table mariadb_cte_recursive 
     mariadb_cte_nonrecursive json_functions gcol_view gcol_supported_sql_funcs 
@@ -100,7 +117,7 @@ if (m3) {
     TIDB_TEST_BRANCH = "${m3[0][1]}"
 }
 m3 = null
-println "TIDB_TEST_BRANCH=${TIDB_TEST_BRANCH}"
+println "TIDB_TEST_BRANCH or PR: ${TIDB_TEST_BRANCH}"
 
 @NonCPS
 boolean isMoreRecentOrEqual( String a, String b ) {
@@ -153,6 +170,20 @@ POD_NAMESPACE = "jenkins-tidb"
 def tidb_url = "${FILE_SERVER_URL}/download/builds/pingcap/tidb/pr/${ghprbActualCommit}/centos7/tidb-server.tar.gz"
 def tidb_done_url = "${FILE_SERVER_URL}/download/builds/pingcap/tidb/pr/${ghprbActualCommit}/centos7/done"
 def TIDB_TEST_STASH_FILE = "tidb_test_mysql_test_${UUID.randomUUID().toString()}.tar"
+
+echo "trigger by upstream job: ${params.containsKey("upstreamJob")}"
+if (params.containsKey("upstreamJob")) {
+    upstreamJob = params.get("upstreamJob")
+    println "upstreamJob: ${upstreamJob}"
+    tidb_url = "${FILE_SERVER_URL}/download/builds/pingcap/tidb-check/pr/${ghprbActualCommit}/centos7/tidb-server.tar.gz"
+    tidb_done_url = "${FILE_SERVER_URL}/download/builds/pingcap/tidb-check/pr/${ghprbActualCommit}/centos7/done"
+}
+
+if (ghprbTargetBranch in ["br-stream"]) {
+    println "This PR is for feature branch"
+    println "Skip mysql_test ci for feature branch: ${ghprbTargetBranch}"
+    return 0
+}
 
 def run_test_with_pod(Closure body) {
     def label = "tidb-ghpr-mysql-test"
@@ -268,37 +299,73 @@ try {
                 dir("go/src/github.com/pingcap/tidb-test/${test_dir}") {
                     try {
                         timeout(10) {
-                            if (ghprbTargetBranch in ["master", "release-5.3", "release-5.4"]) {
+                            if (ghprbTargetBranch in ["master"]) {
                                 sh """
                                 curl -o run-test-part.sh ${FILE_SERVER_URL}/download/cicd/tidb-mysql-test-ci/run-test-part.sh
                                 chmod +x run-test-part.sh
+                                """
+                                sh """
+                                export CI_RUN_PART_TEST_CASES=\"${CI_RUN_PART_TEST_CASES}\"
+                                
+                                set +e
+                                killall -9 -r tidb-server
+                                killall -9 -r tikv-server
+                                killall -9 -r pd-server
+                                rm -rf /tmp/tidb
+                                set -e
+                                TIDB_SERVER_PATH=${ws}/go/src/github.com/pingcap/tidb/bin/tidb-server \
+                                ./run-test-part.sh
+                                
+                                set +e
+                                killall -9 -r tidb-server
+                                killall -9 -r tikv-server
+                                killall -9 -r pd-server
+                                rm -rf /tmp/tidb
+                                set -e
+                                """
+                            } else if (ghprbTargetBranch.startsWith("release-") ) {
+                                sh """
+                                set +e
+                                killall -9 -r tidb-server
+                                killall -9 -r tikv-server
+                                killall -9 -r pd-server
+                                rm -rf /tmp/tidb
+                                set -e
+                                TIDB_SERVER_PATH=${ws}/go/src/github.com/pingcap/tidb/bin/tidb-server \
+                                ./test.sh
+                                
+                                set +e
+                                killall -9 -r tidb-server
+                                killall -9 -r tikv-server
+                                killall -9 -r pd-server
+                                rm -rf /tmp/tidb
+                                set -e
                                 """
                             } else {
                                 sh """
                                 curl -o run-test-part.sh ${FILE_SERVER_URL}/download/cicd/tidb-mysql-test-ci/run-test-part-without-all-arg.sh 
                                 chmod +x run-test-part.sh
                                 """
+                                sh """
+                                export CI_RUN_PART_TEST_CASES=\"${CI_RUN_PART_TEST_CASES}\"
+                                
+                                set +e
+                                killall -9 -r tidb-server
+                                killall -9 -r tikv-server
+                                killall -9 -r pd-server
+                                rm -rf /tmp/tidb
+                                set -e
+                                TIDB_SERVER_PATH=${ws}/go/src/github.com/pingcap/tidb/bin/tidb-server \
+                                ./run-test-part.sh
+                                
+                                set +e
+                                killall -9 -r tidb-server
+                                killall -9 -r tikv-server
+                                killall -9 -r pd-server
+                                rm -rf /tmp/tidb
+                                set -e
+                                """
                             }
-
-                            sh """
-                            export CI_RUN_PART_TEST_CASES=\"${CI_RUN_PART_TEST_CASES}\"
-                            
-                            set +e
-                            killall -9 -r tidb-server
-                            killall -9 -r tikv-server
-                            killall -9 -r pd-server
-                            rm -rf /tmp/tidb
-                            set -e
-                            TIDB_SERVER_PATH=${ws}/go/src/github.com/pingcap/tidb/bin/tidb-server \
-                            ./run-test-part.sh
-                            
-                            set +e
-                            killall -9 -r tidb-server
-                            killall -9 -r tikv-server
-                            killall -9 -r pd-server
-                            rm -rf /tmp/tidb
-                            set -e
-                            """
                         }
                     } catch (err) {
                         sh "cat ${log_path}"

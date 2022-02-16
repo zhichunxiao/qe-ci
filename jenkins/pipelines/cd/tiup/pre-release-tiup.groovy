@@ -24,6 +24,14 @@ dumpling_sha1=""
 ng_monitoring_sha1=""
 tidb_ctl_githash=""
 
+def OS_LINUX = "linux"
+def OS_DARWIN = "darwin"
+def ARM64 = "arm64"
+def AMD64 = "amd64"
+def PLATFORM_CENTOS = "centos7"
+def PLATFORM_DARWIN = "darwin"
+def PLATFORM_DARWINARM = "darwin-arm64"
+
 def get_sha() {
     sh "curl -s ${FILE_SERVER_URL}/download/builds/pingcap/ee/get_hash_from_github.py > gethash.py"
     tidb_sha1 = sh(returnStdout: true, script: "python gethash.py -repo=tidb -version=${RELEASE_BRANCH} -s=${FILE_SERVER_URL}").trim()
@@ -44,7 +52,13 @@ def get_sha() {
     }
     binlog_sha1 = sh(returnStdout: true, script: "python gethash.py -repo=tidb-binlog -version=${RELEASE_BRANCH} -s=${FILE_SERVER_URL}").trim()
     lightning_sha1 = br_sha1
-    tools_sha1 = sh(returnStdout: true, script: "python gethash.py -repo=tidb-tools -version=master -s=${FILE_SERVER_URL}").trim()
+    
+    if (RELEASE_TAG >= "v5.3.0") {
+        tools_sha1 = sh(returnStdout: true, script: "python gethash.py -repo=tidb-tools -version=master -s=${FILE_SERVER_URL}").trim()
+    } else {
+        tools_sha1 = sh(returnStdout: true, script: "python gethash.py -repo=tidb-tools -version=${RELEASE_BRANCH} -s=${FILE_SERVER_URL}").trim()
+    }
+
     cdc_sha1 = sh(returnStdout: true, script: "python gethash.py -repo=ticdc -version=${RELEASE_BRANCH} -s=${FILE_SERVER_URL}").trim()
     tidb_ctl_githash = sh(returnStdout: true, script: "python gethash.py -repo=tidb-ctl -source=github -version=master -s=${FILE_SERVER_URL}").trim()
 
@@ -65,7 +79,7 @@ stage('Build') {
     builds = [:]
     if (params.ARCH_ARM) {
         builds["Build on linux/arm64"] = {
-            build job: "optimization-build-tidb-linux-arm",
+            build job: "optimization-build-tidb",
                     wait: true,
                     parameters: [
                             [$class: 'StringParameterValue', name: 'TIDB_HASH', value: tidb_sha1],
@@ -86,12 +100,15 @@ stage('Build') {
                             [$class: 'StringParameterValue', name: 'RELEASE_BRANCH', value: RELEASE_BRANCH],
                             [$class: 'StringParameterValue', name: 'TIKV_PRID', value: TIKV_BUMPVERSION_PRID],
                             [$class: 'BooleanParameterValue', name: 'FORCE_REBUILD', value: FORCE_REBUILD],
+                            [$class: 'StringParameterValue', name: 'OS', value: OS_LINUX],
+                            [$class: 'StringParameterValue', name: 'ARCH', value: ARM64],
+                            [$class: 'StringParameterValue', name: 'PLATFORM', value: PLATFORM_CENTOS],
                     ]
         }
     }
     if (params.ARCH_MAC) {
         builds["Build on darwin/amd64"] = {
-            build job: "optimization-build-tidb-darwin-amd",
+            build job: "optimization-build-tidb",
                     wait: true,
                     parameters: [
                             [$class: 'StringParameterValue', name: 'TIDB_HASH', value: tidb_sha1],
@@ -112,13 +129,16 @@ stage('Build') {
                             [$class: 'StringParameterValue', name: 'RELEASE_BRANCH', value: RELEASE_BRANCH],
                             [$class: 'StringParameterValue', name: 'TIKV_PRID', value: TIKV_BUMPVERSION_PRID],
                             [$class: 'BooleanParameterValue', name: 'FORCE_REBUILD', value: FORCE_REBUILD],
+                            [$class: 'StringParameterValue', name: 'OS', value: OS_DARWIN],
+                            [$class: 'StringParameterValue', name: 'ARCH', value: AMD64],
+                            [$class: 'StringParameterValue', name: 'PLATFORM', value: PLATFORM_DARWIN],
                     ]
         }
     }
 
     if (params.ARCH_X86) {
         builds["Build on linux/amd64"] = {
-            build job: "optimization-build-tidb-linux-amd",
+            build job: "optimization-build-tidb",
                     wait: true,
                     parameters: [
                             [$class: 'StringParameterValue', name: 'TIDB_HASH', value: tidb_sha1],
@@ -139,13 +159,16 @@ stage('Build') {
                             [$class: 'StringParameterValue', name: 'RELEASE_BRANCH', value: RELEASE_BRANCH],
                             [$class: 'StringParameterValue', name: 'TIKV_PRID', value: TIKV_BUMPVERSION_PRID],
                             [$class: 'BooleanParameterValue', name: 'FORCE_REBUILD', value: FORCE_REBUILD],
+                            [$class: 'StringParameterValue', name: 'OS', value: OS_LINUX],
+                            [$class: 'StringParameterValue', name: 'ARCH', value: AMD64],
+                            [$class: 'StringParameterValue', name: 'PLATFORM', value: PLATFORM_CENTOS],    
                     ]
         }
     }
 
     if (params.ARCH_MAC_ARM) {
         builds["Build on darwin/arm64"] = {
-            build job: "optimization-build-tidb-darwin-arm",
+            build job: "optimization-build-tidb",
                     wait: true,
                     parameters: [
                             [$class: 'StringParameterValue', name: 'TIDB_HASH', value: tidb_sha1],
@@ -166,6 +189,9 @@ stage('Build') {
                             [$class: 'StringParameterValue', name: 'RELEASE_BRANCH', value: RELEASE_BRANCH],
                             [$class: 'StringParameterValue', name: 'TIKV_PRID', value: TIKV_BUMPVERSION_PRID],
                             [$class: 'BooleanParameterValue', name: 'FORCE_REBUILD', value: FORCE_REBUILD],
+                            [$class: 'StringParameterValue', name: 'OS', value: OS_DARWIN],
+                            [$class: 'StringParameterValue', name: 'ARCH', value: ARM64],
+                            [$class: 'StringParameterValue', name: 'PLATFORM', value: PLATFORM_DARWINARM],
                     ]
         }
     }

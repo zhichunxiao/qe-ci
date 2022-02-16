@@ -65,27 +65,27 @@ catchError {
             """
             stage('download') {
                 dir('centos7') {
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb/optimization/${RELEASE_TAG}/${tidb_sha1}/centos7/tidb-server.tar.gz | tar xz"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/pd/optimization/${RELEASE_TAG}/${pd_sha1}/centos7/pd-server.tar.gz | tar xz"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb-ctl/optimization/${RELEASE_TAG}/${tidb_ctl_sha1}/centos7/tidb-ctl.tar.gz | tar xz"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tikv/optimization/${RELEASE_TAG}/${tikv_sha1}/centos7/tikv-server.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb/optimization/${RELEASE_TAG}/${tidb_sha1}/centos7/tidb-linux-amd64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/pd/optimization/${RELEASE_TAG}/${pd_sha1}/centos7/pd-linux-amd64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb-ctl/optimization/${RELEASE_TAG}/${tidb_ctl_sha1}/centos7/tidb-ctl-linux-amd64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tikv/optimization/${RELEASE_TAG}/${tikv_sha1}/centos7/tikv-linux-amd64.tar.gz | tar xz"
                     if (RELEASE_TAG < "v5.2.0") {
-                        sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/importer/optimization/${RELEASE_TAG}/${importer_sha1}/centos7/importer.tar.gz | tar xz"
+                        sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/importer/optimization/${RELEASE_TAG}/${importer_sha1}/centos7/importer-linux-amd64.tar.gz | tar xz"
                     }
                     
 
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb-tools/optimization/${RELEASE_TAG}/${tidb_tools_sha1}/centos7/tidb-tools.tar.gz | tar xz && rm -f bin/checker && rm -f bin/importer && rm -f bin/dump_region"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb-binlog/optimization/${RELEASE_TAG}/${tidb_binlog_sha1}/centos7/tidb-binlog.tar.gz | tar xz"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/br/optimization/${RELEASE_TAG}/${tidb_br_sha1}/centos7/br.tar.gz | tar xz"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/dumpling/optimization/${RELEASE_TAG}/${dumpling_sha1}/centos7/dumpling.tar.gz | tar xz"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tiflash/optimization/${RELEASE_TAG}/${tiflash_sha1}/centos7/tiflash.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb-tools/optimization/${RELEASE_TAG}/${tidb_tools_sha1}/centos7/tidb-tools-linux-amd64.tar.gz | tar xz && rm -f bin/checker && rm -f bin/importer && rm -f bin/dump_region"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb-binlog/optimization/${RELEASE_TAG}/${tidb_binlog_sha1}/centos7/tidb-binlog-linux-amd64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/br/optimization/${RELEASE_TAG}/${tidb_br_sha1}/centos7/br-linux-amd64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/dumpling/optimization/${RELEASE_TAG}/${dumpling_sha1}/centos7/dumpling-linux-amd64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tiflash/optimization/${RELEASE_TAG}/${tiflash_sha1}/centos7/tiflash-linux-amd64.tar.gz | tar xz"
                     sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/mydumper/${mydumper_sha1}/centos7/mydumper-linux-amd64.tar.gz | tar xz"
                 }
 
                 dir('arm') {
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb/optimization/${RELEASE_TAG}/${tidb_sha1}/centos7/tidb-server-linux-arm64.tar.gz | tar xz"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tikv/optimization/${RELEASE_TAG}/${tikv_sha1}/centos7/tikv-server-linux-arm64.tar.gz | tar xz"
-                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/pd/optimization/${RELEASE_TAG}/${pd_sha1}/centos7/pd-server-linux-arm64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb/optimization/${RELEASE_TAG}/${tidb_sha1}/centos7/tidb-linux-arm64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tikv/optimization/${RELEASE_TAG}/${tikv_sha1}/centos7/tikv-linux-arm64.tar.gz | tar xz"
+                    sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/pd/optimization/${RELEASE_TAG}/${pd_sha1}/centos7/pd-linux-arm64.tar.gz | tar xz"
                     sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/tidb-ctl/optimization/${RELEASE_TAG}/${tidb_ctl_sha1}/centos7/tidb-ctl-linux-arm64.tar.gz | tar xz"
                     if (RELEASE_TAG < "v5.2.0") {
                         sh "curl ${FILE_SERVER_URL}/download/builds/pingcap/importer/optimization/${RELEASE_TAG}/${importer_sha1}/centos7/importer-linux-arm64.tar.gz | tar xz"
@@ -113,7 +113,7 @@ catchError {
                            cp ${ws}/centos7/bin/pd-ctl ./bin
                            cp ${ws}/centos7/bin/pd-recover ./bin
                            cp ${ws}/centos7/bin/pd-server ./bin
-                           cp ${ws}/centos7/bin/tidb-ctl ./bin
+                           cp ${ws}/centos7/tidb-ctl-${RELEASE_TAG}-linux-amd64/bin/tidb-ctl ./bin
                            cp ${ws}/centos7/bin/tidb-server ./bin
                            cp ${ws}/centos7/bin/tikv-ctl ./bin
                            cp ${ws}/centos7/bin/tikv-server ./bin
@@ -167,19 +167,19 @@ catchError {
                         sh """
                            mkdir bin
                            # [ -f ${ws}/centos7/bin/goyacc ] && cp ${ws}/centos7/bin/goyacc ./bin
-                           cp ${ws}/arm/pd-v*-linux-arm64/bin/pd-ctl ./bin
-                           cp ${ws}/arm/pd-v*-linux-arm64/bin/pd-recover ./bin
-                           cp ${ws}/arm/pd-v*-linux-arm64/bin/pd-server ./bin
-                           cp ${ws}/arm/tidb-ctl-v*-linux-arm64/bin/tidb-ctl ./bin
-                           cp ${ws}/arm/tidb-v*-linux-arm64/bin/tidb-server ./bin
-                           cp ${ws}/arm/tikv-v*-linux-arm64/bin/tikv-ctl ./bin
-                           cp ${ws}/arm/tikv-v*-linux-arm64/bin/tikv-server ./bin
+                           cp ${ws}/arm/bin/pd-ctl ./bin
+                           cp ${ws}/arm/bin/pd-recover ./bin
+                           cp ${ws}/arm/bin/pd-server ./bin
+                           cp ${ws}/arm/bin/tidb-ctl-${RELEASE_TAG}-linux-arm64/tidb-ctl ./bin
+                           cp ${ws}/arm/bin/tidb-server ./bin
+                           cp ${ws}/arm/bin/tikv-ctl ./bin
+                           cp ${ws}/arm/bin/tikv-server ./bin
                            cp ${ws}/etcd/etcd-v3.3.10-linux-arm64/etcdctl ./bin
-                           cp ${ws}/arm/tidb-binlog-v*-linux-arm64/bin/pump ./bin
-                           cp ${ws}/arm/tidb-binlog-v*-linux-arm64/bin/drainer ./bin
-                           cp ${ws}/arm/tidb-binlog-v*-linux-arm64/bin/reparo ./bin
-                           cp ${ws}/arm/tidb-binlog-v*-linux-arm64/bin/binlogctl ./bin
-                           cp ${ws}/arm/tidb-binlog-v*-linux-arm64/bin/arbiter ./bin
+                           cp ${ws}/arm/bin/pump ./bin
+                           cp ${ws}/arm/bin/drainer ./bin
+                           cp ${ws}/arm/bin/reparo ./bin
+                           cp ${ws}/arm/bin/binlogctl ./bin
+                           cp ${ws}/arm/bin/arbiter ./bin
 
                            wget "http://fileserver.pingcap.net/download/archive/pdf/PingCAP Community Software Agreement(Chinese Version).pdf"
                            md5sum "PingCAP Community Software Agreement(Chinese Version).pdf" > /tmp/chinese.check
@@ -267,16 +267,16 @@ catchError {
                     dir("${target}") {
                         sh """
                            mkdir bin
-                           cp ${ws}/arm/tidb-tools-v*-linux-arm64/bin/sync_diff_inspector ./bin
-                           cp ${ws}/arm/pd-v*-linux-arm64/bin/pd-tso-bench ./bin
+                           cp ${ws}/arm/bin/sync_diff_inspector ./bin
+                           cp ${ws}/arm/bin/pd-tso-bench ./bin
                            if [ ${RELEASE_TAG} \\< "v5.2.0" ]; then
-                               cp ${ws}/arm/importer-v*-linux-arm64/bin/tikv-importer ./bin
+                               cp ${ws}/arm/bin/tikv-importer ./bin
                            fi;
-                           cp ${ws}/arm/br-v*-linux-arm64/bin/br ./bin
-                           cp ${ws}/arm/br-v*-linux-arm64/bin/tidb-lightning ./bin
-                           cp ${ws}/arm/br-v*-linux-arm64/bin/tidb-lightning-ctl ./bin
-                           cp ${ws}/arm/dumpling-v*-linux-arm64/bin/dumpling ./bin
-                           # cp ${ws}/arm/mydumper-linux-amd64/bin/mydumper ./bin
+                           cp ${ws}/arm/bin/br ./bin
+                           cp ${ws}/arm/bin/tidb-lightning ./bin
+                           cp ${ws}/arm/bin/tidb-lightning-ctl ./bin
+                           cp ${ws}/arm/bin/dumpling ./bin
+                           # cp ${ws}/arm/bin/mydumper ./bin
                         """
                     }
 
@@ -338,7 +338,7 @@ catchError {
                 def push_arm_tiflash = { target ->
                     dir("${target}") {
                         sh """
-                            cp -R ${ws}/arm/tiflash-v*-linux-arm64/* ./
+                            cp -R ${ws}/arm/tiflash/* ./
                             wget "http://fileserver.pingcap.net/download/archive/pdf/PingCAP Community Software Agreement(Chinese Version).pdf"
                             md5sum "PingCAP Community Software Agreement(Chinese Version).pdf" > /tmp/chinese.check
                             curl "http://fileserver.pingcap.net/download/archive/pdf/PingCAP Community Software Agreement(Chinese Version).pdf.md5" >> /tmp/chinese.check
@@ -449,7 +449,7 @@ __EOF__
             }
 
             builds["Push br Docker"] = {
-                libs.release_online_image("br", br_sha1, arch,  os , platform,RELEASE_TAG, false)
+                libs.release_online_image("br", tidb_br_sha1, arch,  os , platform,RELEASE_TAG, false)
             }
 
             builds["Push dumpling Docker"] = {
@@ -461,7 +461,7 @@ __EOF__
             }
 
             builds["Push cdc Docker"] = {
-                libs.release_online_image("cdc", cdc_sha1, arch,  os , platform,RELEASE_TAG, false)
+                libs.release_online_image("ticdc", cdc_sha1, arch,  os , platform,RELEASE_TAG, false)
             }
 
             builds["Push tiflash Docker"] = {
@@ -518,7 +518,7 @@ __EOF__
             }
 
             build_arms["Push br Docker"] = {
-                libs.release_online_image("br", br_sha1, arch,  os , platform,RELEASE_TAG, false)
+                libs.release_online_image("br", tidb_br_sha1, arch,  os , platform,RELEASE_TAG, false)
             }
 
             build_arms["Push dumpling Docker"] = {
@@ -530,7 +530,7 @@ __EOF__
             }
 
             build_arms["Push cdc Docker"] = {
-                libs.release_online_image("cdc", cdc_sha1, arch,  os , platform,RELEASE_TAG, false)
+                libs.release_online_image("ticdc", cdc_sha1, arch,  os , platform,RELEASE_TAG, false)
             }
 
             build_arms["Push tiflash Docker"] = {

@@ -1,3 +1,5 @@
+env.DOCKER_HOST = "tcp://localhost:2375"
+
 def check_file_exists(build_para, product) {
     if (build_para["FORCE_REBUILD"]) {
         return true
@@ -97,11 +99,13 @@ def retag_enterprise_docker(product, release_tag) {
     def community_image = "pingcap/${product}:${release_tag}"
     def enterprise_image = "pingcap/${product}-enterprise:${release_tag}"
 
-    sh """
-    docker pull ${community_image}
-    docker tag ${community_image} ${enterprise_image}
-    docker push ${enterprise_image}
-    """
+    withDockerServer([uri: "${env.DOCKER_HOST}"]) {
+        sh """
+        docker pull ${community_image}
+        docker tag ${community_image} ${enterprise_image}
+        docker push ${enterprise_image}
+        """
+    }
 }
 
 def build_product(build_para, product) {
@@ -166,6 +170,9 @@ def build_product(build_para, product) {
 
 def release_online_image(product, sha1, arch,  os , platform,tag, enterprise) {
     def binary = "builds/pingcap/${product}/optimization/${tag}/${sha1}/${platform}/${product}-${os}-${arch}.tar.gz"
+    if (product == "tidb-lightning") {
+        binary = "builds/pingcap/br/optimization/${tag}/${sha1}/${platform}/br-${os}-${arch}.tar.gz"
+    }
     if (enterprise) {
         binary = "builds/pingcap/${product}/optimization/${tag}/${sha1}/${platform}/${product}-${os}-${arch}-enterprise.tar.gz"
     }
