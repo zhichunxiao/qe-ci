@@ -54,4 +54,31 @@ def unpack(name, hash, os, arch) {
     """
 }
 
+def process(release_tag, origin_tag, sha1, name, params ) {
+    stage("Install tiup") {
+        install_tiup "/usr/local/bin", PINGCAP_PRIV_KEY
+    }
+
+    if (params.ARCH_X86) {
+        stage("tiup release br linux amd64") {
+            update name, release_tag, sha1,"linux", "amd64"
+        }
+    }
+    if (params.ARCH_ARM) {
+        stage("tiup release br linux arm64") {
+            update name, release_tag, sha1, "linux", "arm64"
+        }
+    }
+    if (params.ARCH_MAC) {
+        stage("tiup release br darwin amd64") {
+            update name, release_tag, sha1, "darwin", "amd64"
+        }
+    }
+    if (params.ARCH_MAC_ARM) {
+        stage("tiup release br darwin arm64") {
+            update name, release_tag, sha1, "darwin", "arm64"
+        }
+    }
+}
+
 return this
