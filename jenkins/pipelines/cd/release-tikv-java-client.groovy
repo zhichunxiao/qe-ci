@@ -24,6 +24,9 @@ pipeline {
 
         // Git配置
         GIT_CREDENTIAL_ID = "github-sre-bot-ssh"
+
+        // GPG
+        GPG_KEY_NAME = "marsishandsome"
     }
     
     // CD Pipeline
@@ -39,65 +42,66 @@ pipeline {
                 }
             }
         }
-        stage("Maven Build") {
+        stage("Maven Build & Deploy") {
             steps {
                 script {
                     if (VERSION != null && !VERSION.isEmpty()) {
                         sh "mvn versions:set -DnewVersion=${VERSION}"
                     }
-                    sh "mvn clean package -DskipTests=true"
+                    // sh "mvn clean package -DskipTests=true"
+                    sh "mvn clean deploy -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME}"
                 }
             }
         }
-        stage("Publish to Nexus Repository Manager") {
-            steps {
-                script {
-                    // 获取jar包产物: target/*.jar
-                    pom = readMavenPom file: "pom.xml";
-                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
-                    echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
+        // stage("Publish to Nexus Repository Manager") {
+        //     steps {
+        //         script {
+        //             // 获取jar包产物: target/*.jar
+        //             pom = readMavenPom file: "pom.xml";
+        //             filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
+        //             echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
                     
-                    // 获取产物仓库
-                    NEXUS_REPOSITORY = "snapshots";
-                    if (!pom.version.contains("-SNAPSHOT")) {
-                        NEXUS_REPOSITORY = "releases";
-                    }
+        //             // 获取产物仓库
+        //             NEXUS_REPOSITORY = "snapshots";
+        //             if (!pom.version.contains("-SNAPSHOT")) {
+        //                 NEXUS_REPOSITORY = "releases";
+        //             }
 
-                    // 获取产物信息: 文件位置等
-                    artifactPath = filesByGlob[0].path;
-                    artifactExists = fileExists artifactPath;
-                    version = pom.version;
-                    if (VERSION != null && !VERSION.isEmpty()) {
-                        version = VERSION;
-                    }
-                    echo "KeyLog: File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${version}, nexus repo ${NEXUS_REPOSITORY}";
+        //             // 获取产物信息: 文件位置等
+        //             artifactPath = filesByGlob[0].path;
+        //             artifactExists = fileExists artifactPath;
+        //             version = pom.version;
+        //             if (VERSION != null && !VERSION.isEmpty()) {
+        //                 version = VERSION;
+        //             }
+        //             echo "KeyLog: File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${version}, nexus repo ${NEXUS_REPOSITORY}";
 
-                    // 上传到中央Nexus仓库
-                    if(artifactExists) {
-                        nexusArtifactUploader(
-                            nexusVersion: NEXUS_VERSION,
-                            protocol: NEXUS_PROTOCOL,
-                            nexusUrl: NEXUS_URL,
-                            groupId: pom.groupId,
-                            version: version,
-                            repository: NEXUS_REPOSITORY,
-                            credentialsId: NEXUS_CREDENTIAL_ID,
-                            artifacts: [
-                                [artifactId: pom.artifactId,
-                                classifier: '',
-                                file: artifactPath,
-                                type: pom.packaging],
-                                [artifactId: pom.artifactId,
-                                classifier: '',
-                                file: "pom.xml",
-                                type: "pom"]
-                            ]
-                        );
-                    } else {
-                        error "*** File: ${artifactPath}, could not be found";
-                    }
-                }
-            }
-        }
+        //             // 上传到中央Nexus仓库
+        //             if(artifactExists) {
+        //                 nexusArtifactUploader(
+        //                     nexusVersion: NEXUS_VERSION,
+        //                     protocol: NEXUS_PROTOCOL,
+        //                     nexusUrl: NEXUS_URL,
+        //                     groupId: pom.groupId,
+        //                     version: version,
+        //                     repository: NEXUS_REPOSITORY,
+        //                     credentialsId: NEXUS_CREDENTIAL_ID,
+        //                     artifacts: [
+        //                         [artifactId: pom.artifactId,
+        //                         classifier: '',
+        //                         file: artifactPath,
+        //                         type: pom.packaging],
+        //                         [artifactId: pom.artifactId,
+        //                         classifier: '',
+        //                         file: "pom.xml",
+        //                         type: "pom"]
+        //                     ]
+        //                 );
+        //             } else {
+        //                 error "*** File: ${artifactPath}, could not be found";
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
