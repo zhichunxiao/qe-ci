@@ -31,28 +31,36 @@ pipeline {
     
     // CD Pipeline
     stages {
-        stage("Clone Code") {
+        // stage("Clone Code") {
+        //     steps {
+        //         script {
+        //             // Clone and Checkout Branch
+        //             git credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_SSH_URL
+        //             sh "git branch -a" // List all branches.
+        //             sh "git checkout ${BRANCH}" // Checkout to a specific branch in your repo.
+        //             sh "ls -lart ./*"  // Just to view all the files if needed
+        //         }
+        //     }
+        // }
+        stage("GPG") {
             steps {
                 script {
-                    // Clone and Checkout Branch
-                    git credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_SSH_URL
-                    sh "git branch -a" // List all branches.
-                    sh "git checkout ${BRANCH}" // Checkout to a specific branch in your repo.
-                    sh "ls -lart ./*"  // Just to view all the files if needed
+                    // GPG Key
+                    sh "gpg --list-keys" // List all branches.
                 }
             }
         }
-        stage("Maven Build & Deploy") {
-            steps {
-                script {
-                    if (VERSION != null && !VERSION.isEmpty()) {
-                        sh "mvn versions:set -DnewVersion=${VERSION}"
-                    }
-                    // sh "mvn clean package -DskipTests=true"
-                    sh "mvn clean deploy -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME}"
-                }
-            }
-        }
+        // stage("Maven Build & Deploy") {
+        //     steps {
+        //         script {
+        //             if (VERSION != null && !VERSION.isEmpty()) {
+        //                 sh "mvn versions:set -DnewVersion=${VERSION}"
+        //             }
+        //             // sh "mvn clean package -DskipTests=true"
+        //             sh "mvn clean deploy -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME}"
+        //         }
+        //     }
+        // }
         // stage("Publish to Nexus Repository Manager") {
         //     steps {
         //         script {
