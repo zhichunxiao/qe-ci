@@ -52,8 +52,7 @@ pipeline {
                         curl http://fileserver.pingcap.net/download/gpgkey_secret.gpg -o gpgkey_secret.gpg
                         export GPG_TTY=$(tty)
                         rm -rf ~/.gnupg
-                        mkdir -p ~/.gnupg/private-keys-v1.d
-                        chmod 700 ~/.gnupg/private-keys-v1.d
+                        killall gpg-agent dirmngr
                         gpg --import gpgkey_pub.gpg
                         gpg --import gpgkey_secret.gpg
                         gpg --list-keys
