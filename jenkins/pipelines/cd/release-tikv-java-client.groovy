@@ -51,6 +51,7 @@ pipeline {
                         curl http://fileserver.pingcap.net/download/gpgkey_pub.gpg -o gpgkey_pub.gpg
                         curl http://fileserver.pingcap.net/download/gpgkey_secret.gpg -o gpgkey_secret.gpg
                         export GPG_TTY=$(tty)
+                        rm -rf ~/.gnupg 
                         gpg --import gpgkey_pub.gpg
                         gpg --import gpgkey_secret.gpg
                         gpg --list-keys
