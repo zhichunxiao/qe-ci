@@ -46,7 +46,11 @@ pipeline {
             steps {
                 script {
                     // GPG Key
-                    sh "gpg --list-keys" // List all branches.
+                    sh "curl http://fileserver.pingcap.net/download/gpgkey_pub.gpg -o gpgkey_pub.gpg"
+                    sh "curl http://fileserver.pingcap.net/download/gpgkey_secret.gpg -o gpgkey_secret.gpg"
+                    sh "gpg --import gpgkey_pub.gpg"
+                    sh "gpg --allow-secret-key-import --import gpgkey_secret.gpg"
+                    sh "gpg --list-secret-keys"
                 }
             }
         }
