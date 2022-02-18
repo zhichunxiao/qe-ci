@@ -47,6 +47,7 @@ pipeline {
                 script {
                     // GPG Key
                     sh '''
+                        gpg --list-keys
                         curl http://fileserver.pingcap.net/download/gpgkey_pub.gpg -o gpgkey_pub.gpg
                         curl http://fileserver.pingcap.net/download/gpgkey_secret.gpg -o gpgkey_secret.gpg
                         export GPG_TTY=$(tty)
