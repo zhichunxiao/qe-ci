@@ -50,7 +50,7 @@ pipeline {
                     sh "curl http://fileserver.pingcap.net/download/gpgkey_secret.gpg -o gpgkey_secret.gpg"
                     sh "gpg --import gpgkey_pub.gpg"
                     sh "gpg --allow-secret-key-import --import gpgkey_secret.gpg"
-                    sh "gpg --list-secret-keys"
+                    sh "gpg --list-keys"
                 }
             }
         }
