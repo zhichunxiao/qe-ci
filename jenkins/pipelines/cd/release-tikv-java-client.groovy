@@ -71,7 +71,7 @@ pipeline {
                         sh "mvn versions:set -DnewVersion=${VERSION}"
                     }
                     // sh "mvn clean package -DskipTests=true"
-                    sh "export GPG_TTY=\$(tty)"
+                    // sh "export GPG_TTY=\$(tty)"
                     sh "mvn clean deploy -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME}"
                     // sh "mvn clean package -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME} -Dmaven.wagon.rto=18000000"
                 }
