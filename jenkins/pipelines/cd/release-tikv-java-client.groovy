@@ -50,9 +50,9 @@ pipeline {
                         curl http://fileserver.pingcap.net/download/gpgkey_pub.gpg -o gpgkey_pub.gpg
                         curl http://fileserver.pingcap.net/download/gpgkey_secret.gpg -o gpgkey_secret.gpg
 
-                        echo use-agent >> ~/.gnupg/gpg.conf
-                        echo pinentry-mode loopback >> ~/.gnupg/gpg.conf
-                        echo allow-loopback-pinentry >> ~/.gnupg/gpg-agent.conf
+                        echo use-agent > ~/.gnupg/gpg.conf
+                        echo pinentry-mode loopback > ~/.gnupg/gpg.conf
+                        echo allow-loopback-pinentry > ~/.gnupg/gpg-agent.conf
                         echo RELOADAGENT | gpg-connect-agent
                         cat ~/.gnupg/gpg-agent.conf
 
