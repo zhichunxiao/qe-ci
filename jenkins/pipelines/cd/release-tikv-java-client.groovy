@@ -68,8 +68,9 @@ pipeline {
                     if (VERSION != null && !VERSION.isEmpty()) {
                         sh "mvn versions:set -DnewVersion=${VERSION}"
                     }
-                    sh "mvn clean package -DskipTests=true"
+                    sh "mvn clean package -DskipTests=true -Dgpg.keyname=${GPG_KEY_NAME}"
                     // sh "mvn clean package -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME}"
+                    // sh "mvn clean package -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME} -Dmaven.wagon.rto=18000000"
                 }
             }
         }
