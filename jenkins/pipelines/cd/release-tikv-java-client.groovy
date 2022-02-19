@@ -44,10 +44,11 @@ pipeline {
                         grep -qxF 'batch' ~/.gnupg/gpg.conf || echo 'batch' > ~/.gnupg/gpg.conf
                         grep -qxF 'allow-loopback-pinentry' ~/.gnupg/gpg-agent.conf || echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
                         echo RELOADAGENT | gpg-connect-agent
-                        export GPG_TTY=$(tty)
 
                         gpg --import gpgkey_pub.gpg
                         gpg --import gpgkey_secret.gpg
+
+                        gpg --list-keys
                     '''
                 }
             }
@@ -70,6 +71,7 @@ pipeline {
                         sh "mvn versions:set -DnewVersion=${VERSION}"
                     }
                     // sh "mvn clean package -DskipTests=true"
+                    sh "export GPG_TTY=\$(tty)"
                     sh "mvn clean deploy -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME}"
                     // sh "mvn clean package -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME} -Dmaven.wagon.rto=18000000"
                 }
