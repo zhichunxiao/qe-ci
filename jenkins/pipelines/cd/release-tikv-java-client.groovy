@@ -44,6 +44,7 @@ pipeline {
                         grep -qxF 'batch' ~/.gnupg/gpg.conf || echo 'batch' > ~/.gnupg/gpg.conf
                         grep -qxF 'allow-loopback-pinentry' ~/.gnupg/gpg-agent.conf || echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
                         echo RELOADAGENT | gpg-connect-agent
+                        export GPG_TTY=$(tty)
 
                         gpg --import gpgkey_pub.gpg
                         gpg --import gpgkey_secret.gpg
