@@ -54,9 +54,10 @@ pipeline {
                         echo pinentry-mode loopback >> ~/.gnupg/gpg.conf
                         echo allow-loopback-pinentry >> ~/.gnupg/gpg-agent.conf
                         echo RELOADAGENT | gpg-connect-agent
+                        cat ~/.gnupg/gpg-agent.conf
 
                         gpg --import gpgkey_pub.gpg
-                        gpg --import gpgkey_secret.gpg
+                        gpg --import --no-tty gpgkey_secret.gpg
                     '''
                 }
             }
