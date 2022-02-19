@@ -42,6 +42,7 @@ pipeline {
                         grep -qxF 'use-agent' ~/.gnupg/gpg.conf || echo 'use-agent' >> ~/.gnupg/gpg.conf
                         grep -qxF 'pinentry-mode loopback' ~/.gnupg/gpg.conf || echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
                         grep -qxF 'batch' ~/.gnupg/gpg.conf || echo 'batch' >> ~/.gnupg/gpg.conf
+                        grep -qxF 'allow-loopback-pinentry' ~/.gnupg/gpg.conf || echo 'allow-loopback-pinentry' >> ~/.gnupg/gpg.conf
                         grep -qxF 'allow-loopback-pinentry' ~/.gnupg/gpg-agent.conf || echo 'allow-loopback-pinentry' >> ~/.gnupg/gpg-agent.conf
                         cat ~/.gnupg/gpg.conf
                         cat ~/.gnupg/gpg-agent.conf
