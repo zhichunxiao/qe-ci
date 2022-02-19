@@ -39,7 +39,6 @@ pipeline {
                         curl http://fileserver.pingcap.net/download/gpgkey_pub.gpg -o gpgkey_pub.gpg
                         curl http://fileserver.pingcap.net/download/gpgkey_secret.gpg -o gpgkey_secret.gpg
 
-                        echo 'use-agent' > ~/.gnupg/gpg.conf
                         grep -qxF 'use-agent' ~/.gnupg/gpg.conf || echo 'use-agent' >> ~/.gnupg/gpg.conf
                         grep -qxF 'pinentry-mode loopback' ~/.gnupg/gpg.conf || echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
                         grep -qxF 'batch' ~/.gnupg/gpg.conf || echo 'batch' >> ~/.gnupg/gpg.conf
