@@ -39,10 +39,12 @@ pipeline {
                         curl http://fileserver.pingcap.net/download/gpgkey_pub.gpg -o gpgkey_pub.gpg
                         curl http://fileserver.pingcap.net/download/gpgkey_secret.gpg -o gpgkey_secret.gpg
 
-                        grep -qxF 'use-agent' ~/.gnupg/gpg.conf || echo 'use-agent' > ~/.gnupg/gpg.conf
-                        grep -qxF 'pinentry-mode loopback' ~/.gnupg/gpg.conf || echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
-                        grep -qxF 'batch' ~/.gnupg/gpg.conf || echo 'batch' > ~/.gnupg/gpg.conf
-                        grep -qxF 'allow-loopback-pinentry' ~/.gnupg/gpg-agent.conf || echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
+                        grep -qxF 'use-agent' ~/.gnupg/gpg.conf || echo 'use-agent' >> ~/.gnupg/gpg.conf
+                        grep -qxF 'pinentry-mode loopback' ~/.gnupg/gpg.conf || echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
+                        grep -qxF 'batch' ~/.gnupg/gpg.conf || echo 'batch' >> ~/.gnupg/gpg.conf
+                        grep -qxF 'allow-loopback-pinentry' ~/.gnupg/gpg-agent.conf || echo 'allow-loopback-pinentry' >> ~/.gnupg/gpg-agent.conf
+                        cat ~/.gnupg/gpg.conf
+                        cat ~/.gnupg/gpg-agent.conf
                         echo RELOADAGENT | gpg-connect-agent
 
                         gpg --import gpgkey_pub.gpg
@@ -71,7 +73,7 @@ pipeline {
                         sh "mvn versions:set -DnewVersion=${VERSION}"
                     }
                     // sh "mvn clean package -DskipTests=true"
-                    // sh "export GPG_TTY=\$(tty)"
+                    sh "export GPG_TTY=\$(tty)"
                     sh "mvn clean deploy -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME}"
                     // sh "mvn clean package -DskipTests -Dgpg.skip=false -Djavadoc.skip=false -Dgpg.keyname=${GPG_KEY_NAME} -Dmaven.wagon.rto=18000000"
                 }
